@@ -2,8 +2,6 @@
 
 🔗 [Live Demo](https://ai-career-coach-seven-inky.vercel.app/) | ✨ Powered by Next.js, Tailwind CSS, Prisma, Gemini AI
 
-![SensAI Banner](./assets/sensai-banner.png) <!-- Replace with your banner image path -->
-
 SensAI is a full-stack AI-powered **Career Coaching Platform** designed to help individuals unlock their true professional potential with tools for **interview preparation**, **cover letter generation**, **industry insights**, and more — all in one place.
 
 ---
@@ -56,8 +54,8 @@ SensAI is a full-stack AI-powered **Career Coaching Platform** designed to help 
 - `Vercel`
 
 **Utilities:**
-- `Zod` for schema validation
-- `date-fns` for formatting
+- `Zod` for schema validation  
+- `date-fns` for formatting  
 - `Git & GitHub` for version control
 
 ---
@@ -91,18 +89,17 @@ Get career-related guidance instantly — 24/7 AI-based responses.
 ---
 
 ## 📸 Screenshots
+<img width="1897" height="950" alt="sensai banner" src="https://github.com/user-attachments/assets/f5867d5b-4d18-4549-b855-99d911790e52" />
+<img width="1910" height="962" alt="dashboard" src="https://github.com/user-attachments/assets/123eb80c-3748-49ec-968f-82a265cd84d4" />
+<img width="1911" height="963" alt="resume" src="https://github.com/user-attachments/assets/4ff0c087-2b8d-4d67-9755-14ff579c2250" />
+<img width="1902" height="956" alt="mock interview" src="https://github.com/user-attachments/assets/3a466ea2-a0b4-4d83-adc8-9a5ca811b5ed" />
+<img width="1920" height="962" alt="performance" src="https://github.com/user-attachments/assets/d012888c-b3e1-4b0e-ad5e-5b0aead31535" />
+<img width="1901" height="966" alt="coverletter" src="https://github.com/user-attachments/assets/ba19ab72-8592-49f0-8a56-79de325ab84f" />
+<img width="1915" height="971" alt="aicoverletter" src="https://github.com/user-attachments/assets/648e3564-5d72-4c8e-895f-6a740ce723df" />
 
-### 🧑‍💼 AI Cover Letter Generator  
-![Cover Letter](./assets/cover-letter.png) <!-- Replace with your image path -->
 
-### 📊 Performance Dashboard  
-![Dashboard](./assets/dashboard.png) <!-- Replace with your image path -->
 
-### 🧠 Quiz Attempt Page  
-![Quiz](./assets/quiz.png) <!-- Replace with your image path -->
 
-> 📽️ **Want to see it in action?**  
-> 🎥 [Watch the Demo Video](https://www.loom.com/) *(Insert your Loom/Youtube link)*
 
 ---
 
@@ -118,7 +115,7 @@ npm install
 
 # Set up environment variables
 cp .env.example .env
-# Add your Clerk, Gemini, and DB credentials
+# Add your Clerk, Gemini API, and Database credentials
 
 # Run the development server
 npm run dev
