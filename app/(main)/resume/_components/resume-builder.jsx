@@ -31,11 +31,20 @@ import { resumeSchema } from "@/app/lib/schema";
 import styles from "./resume-builder.module.css";
 import { marked } from "marked";
 
-export default function ResumeBuilder({ initialContent }) {
+export default function ResumeBuilder({ initialContent = "" }) {
   const [activeTab, setActiveTab] = useState("edit");
   const [previewContent, setPreviewContent] = useState(initialContent);
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const [resumeMode, setResumeMode] = useState("preview");
+
+  // Don't render until user is loaded
+  if (!isLoaded) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   const {
     control,
@@ -96,10 +105,12 @@ export default function ResumeBuilder({ initialContent }) {
       parts.push(`💼 [LinkedIn](${contactInfo.linkedin})`);
     if (contactInfo.twitter) parts.push(`🐦 [Twitter](${contactInfo.twitter})`);
 
+    const userName = user?.fullName || "Your Name";
+    
     return parts.length > 0
-      ? `## <div align="center">${user.fullName}</div>
+      ? `## <div align="center">${userName}</div>
         \n\n<div align="center">\n\n${parts.join(" | ")}\n\n</div>`
-      : "";
+      : `## <div align="center">${userName}</div>`;
   };
 
   const getCombinedContent = () => {
@@ -122,27 +133,35 @@ export default function ResumeBuilder({ initialContent }) {
     setIsGenerating(true);
     try {
       if (typeof window !== "undefined") {
-        const html2pdf = (await import("html2pdf.js")).default;
         const element = document.getElementById("resume-pdf");
-        if (element) {
+        if (!element) {
+          toast.error("Resume content not found for PDF generation");
+          return;
+        }
+
         element.classList.remove(styles.pdfHidden);
-        await new Promise((r) => setTimeout(r, 200));
-        console.log("Converted HTML:", marked.parse(previewContent)); 
+        await new Promise((r) => setTimeout(r, 500));
+        
         const html2pdf = (await import("html2pdf.js")).default;
         const opt = {
           margin: [15, 15],
           filename: "resume.pdf",
           image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2 },
+          html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            allowTaint: true 
+          },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         };
+        
         await html2pdf().set(opt).from(element).save();
         element.classList.add(styles.pdfHidden);
+        toast.success("PDF downloaded successfully!");
       }
-    }
-  }
-    catch (error) {
+    } catch (error) {
       console.error("PDF generation error:", error);
+      toast.error("Failed to generate PDF. Please try again.");
     } finally {
       setIsGenerating(false);
     }

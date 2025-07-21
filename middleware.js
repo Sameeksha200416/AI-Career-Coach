@@ -9,13 +9,21 @@ const isProtectedRoute = createRouteMatcher([
   "/interview(.*)",
   "/onboarding(.*)",
 ]);
+
 export default clerkMiddleware(async (auth, req) => {
-  const {userId} = await auth()
-if(!userId && isProtectedRoute(req)){
-  const {redirectToSignIn} = await auth()
-  return redirectToSignIn()
-}
-return NextResponse.next();
+  try {
+    const { userId } = await auth();
+    
+    if (!userId && isProtectedRoute(req)) {
+      const { redirectToSignIn } = await auth();
+      return redirectToSignIn();
+    }
+    
+    return NextResponse.next();
+  } catch (error) {
+    console.error('Middleware error:', error);
+    return NextResponse.next();
+  }
 });
 
 export const config = {
