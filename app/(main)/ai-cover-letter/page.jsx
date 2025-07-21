@@ -9,7 +9,7 @@ export default async function CoverLetterPage() {
 
   return (
     <div className="container mx-auto py-6">
-      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-8">
+      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-8 mt-4">
         <h1 className="text-4xl md:text-6xl font-bold gradient-title">
           My Cover Letters
         </h1>
