@@ -5,15 +5,21 @@ import DashboardViewWrapper from "./_components/DashboardViewWrapper";
 import { getIndustryInsights } from '@/actions/dashboard'; 
 
 const IndustryInsightsPage = async () => {
-
-    const { isOnboarded } = await getUserOnboardingStatus();
-    const insights = await getIndustryInsights();
-    if(!isOnboarded) {
+    try {
+        const { isOnboarded } = await getUserOnboardingStatus();
+        
+        if(!isOnboarded) {
+            redirect('/onboarding');
+        }
+        
+        const insights = await getIndustryInsights();
+        return <div className="container mx-auto">
+            <DashboardViewWrapper insights={insights} />
+        </div>;
+    } catch (error) {
+        console.error("Error in dashboard page:", error);
+        // Redirect to onboarding if there's an error
         redirect('/onboarding');
     }
-
-    return <div className="container mx-auto">
-        <DashboardViewWrapper insights={insights} />
-    </div>;
 };
 export default IndustryInsightsPage;

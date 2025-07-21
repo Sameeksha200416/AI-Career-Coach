@@ -19,6 +19,21 @@ export default clerkMiddleware(async (auth, req) => {
       return redirectToSignIn();
     }
     
+    // If user is authenticated and accessing a protected route, 
+    // ensure they go through onboarding if needed
+    if (userId && isProtectedRoute(req) && !req.nextUrl.pathname.startsWith('/onboarding')) {
+      try {
+        // Only redirect to onboarding for dashboard, not for other routes
+        if (req.nextUrl.pathname === '/dashboard') {
+          // Let the dashboard page handle onboarding check
+          return NextResponse.next();
+        }
+      } catch (dbError) {
+        console.error('Database error in middleware:', dbError);
+        // Continue with the request even if database check fails
+      }
+    }
+    
     return NextResponse.next();
   } catch (error) {
     console.error('Middleware error:', error);

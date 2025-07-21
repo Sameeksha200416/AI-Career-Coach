@@ -5,10 +5,16 @@ import { redirect } from 'next/navigation';
 import { getUserOnboardingStatus } from "@/actions/user"; 
 
 const OnboardingPage = async () => {
-    const { isOnboarded } = await getUserOnboardingStatus();
-    if(isOnboarded) {
-        redirect('/dashboard');
+    try {
+        const { isOnboarded } = await getUserOnboardingStatus();
+        if(isOnboarded) {
+            redirect('/dashboard');
+        }
+    } catch (error) {
+        console.error("Error checking onboarding status:", error);
+        // Continue to show onboarding form if there's an error
     }
+    
     return(
          <main>
         <OnboardingForm industries={industries}/>

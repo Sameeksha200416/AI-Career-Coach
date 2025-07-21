@@ -84,9 +84,12 @@ export async function updateUser(data) {
 export async function getUserOnboardingStatus() {
     try {
         const { userId } = await auth();
-        if (!userId) throw new Error("Unauthorized");
+        if (!userId) {
+            return { isOnboarded: false };
+        }
 
-        const user = await db.user.findUnique({
+        // First, try to find the user
+        let user = await db.user.findUnique({
             where: {
                 clerkUserId: userId,
             },
@@ -95,10 +98,33 @@ export async function getUserOnboardingStatus() {
             },
         });
         
-        if (!user) throw new Error("User not found");
+        // If user doesn't exist, create them first
+        if (!user) {
+            const { currentUser } = await import("@clerk/nextjs/server");
+            const clerkUser = await currentUser();
+            
+            if (clerkUser) {
+                const name = `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'User';
+                const email = clerkUser.emailAddresses?.[0]?.emailAddress;
+                
+                if (email) {
+                    user = await db.user.create({
+                        data: {
+                            clerkUserId: userId,
+                            name,
+                            imageUrl: clerkUser.imageUrl || null,
+                            email,
+                        },
+                        select: {
+                            industry: true,
+                        },
+                    });
+                }
+            }
+        }
         
         return {
-            isOnboarded: !!user?.industry,
+            isOnboarded: !!(user?.industry),
         };
     } catch (error) {
         console.error("Error checking user onboarding status:", error.message);
