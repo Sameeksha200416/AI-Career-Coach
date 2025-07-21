@@ -62,7 +62,14 @@ export default function CoverLetterList({ coverLetters }) {
                   {letter.jobTitle} at {letter.companyName}
                 </CardTitle>
                 <CardDescription>
-                  Created {format(new Date(letter.createdAt), "PPP")}
+                  Created {letter.createdAt ? (() => {
+                    try {
+                      const date = new Date(letter.createdAt);
+                      return !isNaN(date.getTime()) ? format(date, "PPP") : "Date unknown";
+                    } catch {
+                      return "Date unknown";
+                    }
+                  })() : "Date unknown"}
                 </CardDescription>
               </div>
               <div className="flex space-x-2">

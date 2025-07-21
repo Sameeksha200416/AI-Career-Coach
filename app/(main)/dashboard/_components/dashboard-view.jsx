@@ -28,13 +28,26 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
 export default function DashboardView({ insights }) {
-    // Transform salary data for the chart
-  const salaryData = insights.salaryRanges.map((range) => ({
-    name: range.role,
-    min: range.min / 1000,
-    max: range.max / 1000,
-    median: range.median / 1000,
-  }));
+    // Add safety check for insights data
+    if (!insights || !insights.salaryRanges) {
+        return (
+            <div className="container mx-auto py-6">
+                <div className="text-center">
+                    <p className="text-muted-foreground">No industry insights available yet.</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Transform salary data for the chart - with safety checks
+    const salaryData = insights.salaryRanges
+        .filter(range => range && range.role) // Filter out invalid entries
+        .map((range) => ({
+            name: range.role,
+            min: (range.min || 0) / 1000,
+            max: (range.max || 0) / 1000,
+            median: (range.median || 0) / 1000,
+        }));
   const getDemandLevelColor = (level) => {
     switch (level.toLowerCase()) {
       case "high":
@@ -62,12 +75,27 @@ export default function DashboardView({ insights }) {
   const OutlookIcon = getMarketOutlookInfo(insights.marketOutlook).icon;
   const outlookColor = getMarketOutlookInfo(insights.marketOutlook).color;
 
-   // Format dates using date-fns
-  const lastUpdatedDate = format(new Date(insights.lastUpdated), "dd/MM/yyyy");
-  const nextUpdateDistance = formatDistanceToNow(
-    new Date(insights.nextUpdate),
-    { addSuffix: true }
-  );
+   // Format dates using date-fns with safety checks
+  let lastUpdatedDate = "Unknown";
+  let nextUpdateDistance = "Unknown";
+  
+  try {
+    if (insights.lastUpdated) {
+      const lastDate = new Date(insights.lastUpdated);
+      if (!isNaN(lastDate.getTime())) {
+        lastUpdatedDate = format(lastDate, "dd/MM/yyyy");
+      }
+    }
+    
+    if (insights.nextUpdate) {
+      const nextDate = new Date(insights.nextUpdate);
+      if (!isNaN(nextDate.getTime())) {
+        nextUpdateDistance = formatDistanceToNow(nextDate, { addSuffix: true });
+      }
+    }
+  } catch (error) {
+    console.error("Error formatting dates:", error);
+  }
 
   // return <div>DashboardView</div>;
   return (

@@ -54,12 +54,18 @@ export default function QuizList({ assessments }) {
                     Quiz {i + 1}
                   </CardTitle>
                   <CardDescription className="flex justify-between w-full">
-                    <div>Score: {assessment.quizScore.toFixed(1)}%</div>
+                    <div>Score: {(assessment.quizScore || 0).toFixed(1)}%</div>
                     <div>
-                      {format(
-                        new Date(assessment.createdAt),
-                        "MMMM dd, yyyy HH:mm"
-                      )}
+                      {assessment.createdAt ? (() => {
+                        try {
+                          const date = new Date(assessment.createdAt);
+                          return !isNaN(date.getTime()) 
+                            ? format(date, "MMMM dd, yyyy HH:mm")
+                            : "Date unknown";
+                        } catch {
+                          return "Date unknown";
+                        }
+                      })() : "Date unknown"}
                     </div>
                   </CardDescription>
                 </CardHeader>

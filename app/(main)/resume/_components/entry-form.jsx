@@ -23,8 +23,13 @@ import useFetch from "@/hooks/use-fetch";
 
 const formatDisplayDate = (dateString) => {
   if (!dateString) return "";
-  const date = parse(dateString, "yyyy-MM", new Date());
-  return format(date, "MMM yyyy");
+  try {
+    const date = parse(dateString, "yyyy-MM", new Date());
+    return !isNaN(date.getTime()) ? format(date, "MMM yyyy") : "";
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "";
+  }
 };
 
 export function EntryForm({ type, entries, onChange }) {
@@ -34,17 +39,36 @@ export function EntryForm({ type, entries, onChange }) {
   const [formattedEntries, setFormattedEntries] = useState([]);
 
   useEffect(() => {
-    // Format dates only on client
-    const newEntries = entries.map((item) => ({
-      ...item,
-      startDate: item.startDate
-        ? format(parse(item.startDate, "yyyy-MM", new Date()), "MMM yyyy")
-        : "",
-      endDate: item.endDate
-        ? format(parse(item.endDate, "yyyy-MM", new Date()), "MMM yyyy")
-        : "",
-    }));
-    setFormattedEntries(newEntries);
+    // Format dates only on client with error handling
+    try {
+      const newEntries = entries.map((item) => ({
+        ...item,
+        startDate: item.startDate
+          ? (() => {
+              try {
+                const date = parse(item.startDate, "yyyy-MM", new Date());
+                return !isNaN(date.getTime()) ? format(date, "MMM yyyy") : "";
+              } catch {
+                return "";
+              }
+            })()
+          : "",
+        endDate: item.endDate
+          ? (() => {
+              try {
+                const date = parse(item.endDate, "yyyy-MM", new Date());
+                return !isNaN(date.getTime()) ? format(date, "MMM yyyy") : "";
+              } catch {
+                return "";
+              }
+            })()
+          : "",
+      }));
+      setFormattedEntries(newEntries);
+    } catch (error) {
+      console.error("Error formatting entries:", error);
+      setFormattedEntries(entries || []);
+    }
   }, [entries]);
 
   const {

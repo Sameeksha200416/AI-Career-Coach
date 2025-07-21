@@ -31,15 +31,32 @@ export default function PerformanceChart({ assessments }) {
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    if (assessments) {
-      const formattedData = assessments.map((assessment) => ({
-        date: format(new Date(assessment.createdAt), "MMM dd"),
-        // score: assessment.quizScore,
-        score: typeof assessment.quizScore === "number" ? assessment.quizScore : 0,
-      }));
-      setChartData(formattedData);
-      console.log("Chart Data:", formattedData);
-      
+    if (assessments && Array.isArray(assessments) && assessments.length > 0) {
+      try {
+        const formattedData = assessments
+          .filter(assessment => assessment.createdAt) // Filter out invalid dates
+          .map((assessment) => {
+            const date = new Date(assessment.createdAt);
+            // Check if date is valid
+            if (isNaN(date.getTime())) {
+              console.warn("Invalid date:", assessment.createdAt);
+              return null;
+            }
+            return {
+              date: format(date, "MMM dd"),
+              score: typeof assessment.quizScore === "number" ? assessment.quizScore : 0,
+            };
+          })
+          .filter(Boolean); // Remove null entries
+        
+        setChartData(formattedData);
+        console.log("Chart Data:", formattedData);
+      } catch (error) {
+        console.error("Error formatting chart data:", error);
+        setChartData([]);
+      }
+    } else {
+      setChartData([]);
     }
   }, [assessments]);
 
