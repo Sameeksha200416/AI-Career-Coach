@@ -1,4 +1,5 @@
-# SENSAi - AI Career Coach: Professional Documentation
+# SENSAi - AI Career Coach
+# Project Documentation
 
 ## Executive Summary
 
